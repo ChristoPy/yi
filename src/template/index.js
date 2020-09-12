@@ -2,8 +2,8 @@ const MUSTACHE_REGEX = /{{\s*\w*\s*}}/g
 
 /**
  * Template compiler function
- * @param {String} The template
- * @param {Object} The data to bind with the template
+ * @param {String} template The template
+ * @param {Object} data Data to bind with the template
  */
 module.exports = (template, data) => {
   [...template.matchAll(MUSTACHE_REGEX)]

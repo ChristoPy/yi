@@ -5,9 +5,9 @@ const $render = ({ $dom, $template, $data }) => {
 
 /**
  * Main component function
- * @param {String} The target element
- * @param {Object} The component's data
- * @param {String} The component's template
+ * @param {String} dom The target element
+ * @param {Object} data The component's data
+ * @param {String} template The component's template
  */
 module.exports = ({ dom, data, template }) => {
   let $data = {}
