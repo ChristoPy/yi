@@ -1,0 +1,22 @@
+{
+  "name": "yi",
+  "version": "1.0.0",
+  "description": "Messing with JS while having insomnia.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristoPy/yi.git"
+  },
+  "keywords": [
+    "yi"
+  ],
+  "author": "Christopher Ribeiro <christo_campiglia@hotmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ChristoPy/yi/issues"
+  },
+  "homepage": "https://github.com/ChristoPy/yi#readme"
+}
