@@ -13,7 +13,6 @@ module.exports = (data, callback) => {
     },
     set: (_, path, value) => {
       data[path] = value
-      console.log(callback);
       callback()
       return true
     }
