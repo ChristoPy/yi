@@ -7,25 +7,14 @@ module.exports = (data, callback) => {
   // Configure internal object to store the data
   // unsure it this has to be done with Object.hasOwnProperty and Object.defineProperty
   // nomarlly Proxy traps are not done this way (i guess)
-  for (const key in data) {
-    if (data.hasOwnProperty(key)) {
-      let value = data[key]
-
-      Object.defineProperty(data, key, {
-        get() {
-          return value
-        },
-        set(newValue) {
-          value = newValue
-          callback({ key, value })
-        }
-      })
-    }
-  }
-
   return new Proxy(data, {
-    set: (_, name, value) => {
-      data[name] = value
+    get: (_, path) => {
+      return data[path]
+    },
+    set: (_, path, value) => {
+      data[path] = value
+      console.log(callback);
+      callback()
       return true
     }
   })
