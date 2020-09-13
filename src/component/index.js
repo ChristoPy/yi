@@ -1,6 +1,6 @@
 // Render a template
-const $render = ({ $dom, $template, $data }) => {
-  import('../template').then((parseTemplate) => $dom.innerHTML = parseTemplate($template, $data))
+const $render = ({ dom, template, data }) => {
+  import('../template').then((parseTemplate) => dom.innerHTML = parseTemplate(template, data))
 }
 
 /**
@@ -9,18 +9,23 @@ const $render = ({ $dom, $template, $data }) => {
  * @param {Object} data The component's data
  * @param {String} template The component's template
  */
-module.exports = ({ dom, data, template }) => {
-  let $data = {}
-  const $template = template || ''
-  const $dom = document.querySelector(dom)
+module.exports = ({ dom, data = {}, template = '' }) => {
+  const $shadow = {
+    data,
+    template,
+    dom: document.querySelector(dom)
+  }
 
-  // If the component has data, bind it before in order to add reactivity
+  const render = () => $render($shadow)
+
   if (data) {
     import('../bind').then((bind) => {
-      $data = bind(data, $render)
-      $render({ $dom, $template, $data })
+      $shadow.data = bind(data, render)
+      render()
     })
-  } else if (template) {
-    $render({ $dom, $template, $data })
+  } else {
+    render()
   }
+
+  return $shadow
 }
