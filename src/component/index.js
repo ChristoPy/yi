@@ -1,7 +1,7 @@
 // Render a template
-const $render = ({ dom, template, data }) => {
-  import('../template').then((parseTemplate) => dom.innerHTML = parseTemplate(template, data))
-}
+const $render = ({ dom, template, data }) => import('../template').then(
+  (parseTemplate) => dom.innerHTML = parseTemplate(template, data)
+)
 
 /**
  * Main component function
