@@ -8,6 +8,9 @@ const $render = ({ dom, template, data }) => import('../template').then(
  * @param {String} dom The target element
  * @param {Object} data The component's data
  * @param {String} template The component's template
+ * @param {Function} created A function called when the component is created
+ * @param {Function} mounted A function called when the component is mounted
+ * @param {Function} updated A function called when the component is updated
  */
 module.exports = ({ dom, data = {}, template = '', created = () => {}, mounted = () => {}, updated = () => {} }) => {
   let $mounted = false
