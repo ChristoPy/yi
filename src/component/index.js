@@ -9,14 +9,25 @@ const $render = ({ dom, template, data }) => import('../template').then(
  * @param {Object} data The component's data
  * @param {String} template The component's template
  */
-module.exports = ({ dom, data = {}, template = '' }) => {
+module.exports = ({ dom, data = {}, template = '', created = () => {}, mounted = () => {}, updated = () => {} }) => {
+  let $mounted = false
   const $shadow = {
     data,
     template,
     dom: document.querySelector(dom)
   }
 
-  const render = () => $render($shadow)
+  created.call($shadow)
+
+  const render = () => {
+    $render($shadow)
+    if (!$mounted) {
+      $mounted = true
+      mounted.call($shadow)
+    } else {
+      updated.call($shadow)
+    }
+  }
 
   if (data) {
     import('../bind').then((bind) => {
