@@ -1,5 +1,5 @@
 // Render a template
-const $render = ({ dom, template, data }) => import('../template').then(
+const $render = (dom, template, data) => import('../template').then(
   (parseTemplate) => dom.innerHTML = parseTemplate(template, data)
 )
 
@@ -16,14 +16,13 @@ module.exports = ({ dom, data = {}, template = '', created = () => {}, mounted =
   let $mounted = false
   const $shadow = {
     data,
-    template,
     dom: document.querySelector(dom)
   }
 
   created.call($shadow)
 
   const render = () => {
-    $render($shadow)
+    $render($shadow.dom, template, $shadow.data)
     if (!$mounted) {
       $mounted = true
       mounted.call($shadow)
