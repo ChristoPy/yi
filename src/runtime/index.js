@@ -1,5 +1,5 @@
 // Render a template
-const $render = (dom, template, data) => import('../template').then(
+const $render = (dom, template, data) => import('./template').then(
   (parseTemplate) => dom.innerHTML = parseTemplate(template, data)
 )
 
@@ -32,7 +32,7 @@ module.exports = ({ dom, data = {}, template = '', created = () => {}, mounted =
   }
 
   if (data) {
-    import('../bind').then((bind) => {
+    import('./bind').then((bind) => {
       $shadow.data = bind(data, render)
       render()
     })
