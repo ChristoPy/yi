@@ -38,9 +38,9 @@ class Tag {
       attribute.value = this.source.substring(this.startedEqual + 1, this.end)
     }
 
-    let lastCharacter = attribute.value.length - 1
-    if (isQuote(attribute.value[lastCharacter])) {
-      attribute.value = attribute.value.substring(0, lastCharacter)
+    let lastCharacter = attribute.content.length - 1
+    if (isQuote(attribute.content[lastCharacter])) {
+      attribute.value = attribute.content.substring(0, lastCharacter)
     }
 
     return attribute
@@ -63,6 +63,38 @@ class Tag {
     this.attributes.push(attribute)
     this.startedAttributes = null
     this.startedEqual = false
+  }
+
+  parseBinding() {
+    const start = this.index
+
+    assert(this.next() === '{', 'Bind error')
+
+    let previous, next
+    while(true) {
+      let current = this.next()
+
+      if (next) {
+        if (current !== next || previous === '\\') {
+          continue
+        }
+
+        next = null
+        continue
+      }
+
+      if (isQuote(current)) {
+        next = current
+        continue
+      }
+
+      assert(current === '{', `Error binding: ${this.code.substring(start, this.index)}`)
+      if (current !== '}') {
+        continue
+      }
+
+      return this.code.substring(start + 1, this.index - 1)
+    }
   }
 
   parse() {
