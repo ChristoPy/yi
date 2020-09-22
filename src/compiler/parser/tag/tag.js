@@ -5,6 +5,7 @@ class Tag {
     this.code = source
     this.index = index
 
+    this.name = ''
     this.attributes = []
     this.open = false
     this.closed = false
@@ -14,7 +15,7 @@ class Tag {
     this.type = 'tag'
     this.selfClosing = null
 
-    this.started = true
+    this.started = false
     this.startedArguments = null
     this.startedBinding = null
     this.startedEqual = null
@@ -22,7 +23,10 @@ class Tag {
   }
 
   // should be injected after
-  next() {}
+  next() {
+    assert(this.index < this.code.length, 'EOF')
+    return this.code[this.index++]
+  }
 
   parseEqual(content) {
     const attribute = {
@@ -42,7 +46,7 @@ class Tag {
     return attribute
   }
 
-  flush(shift = 0) {
+  parseAttributes(shift = 0) {
     if (!this.startedAttributes) return
 
     this.end = this.index - 1 + shift
@@ -62,6 +66,7 @@ class Tag {
   }
 
   parse() {
+    this.started = true
     let current = this.index
     let next = this.next()
 
@@ -83,7 +88,7 @@ class Tag {
       if (this.startedBinding) {
         if (next === '}') {
           this.startedBinding = false
-          this.flush(1)
+          this.parseAttributes(1)
         }
         continue
       }
@@ -101,11 +106,11 @@ class Tag {
       if (next === '/') {
        next = this.next()
        assert(next === '>')
-       this.flush(-1) 
+       this.parseAttributes(-1) 
       }
 
       if (next === '>') {
-        this.flush()
+        this.parseAttributes()
 
         const isSelfClosingTag = selfClosingTags.includes(this.name)
         const closedTag = isSelfClosingTag || this.code[this.index-2] == '/'
@@ -120,22 +125,22 @@ class Tag {
       }
 
       if (this.started) {
-        if (current.match(/[\da-zA-Z]/)) {
-          this.name += current
+        if (next.match(/[\da-zA-Z]/)) {
+          this.name += next
           continue
         }
 
         this.started = false
 
-        if (current === ':') {
+        if (next === ':') {
           this.startedArguments = true
           this.startedAttributes = this.index
         }
       } else if (this.startedAttributes) {
-        if (current === '=' && !this.startedEqual) {
+        if (next === '=' && !this.startedEqual) {
           this.startedEqual = this.index - 1
-        } else if (current.match(/\s/)) {
-          this.flush()
+        } else if (next.match(/\s/)) {
+          this.parseAttributes()
         }
       }
     }
