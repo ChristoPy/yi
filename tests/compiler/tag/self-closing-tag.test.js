@@ -1,21 +1,21 @@
 const Tag = require('../../../src/compiler/parser/tag')
 const { EOF } = require('../../../src/compiler/error-messages')
 
-test('[SELF-CLOSING-TAG] Parse a self closing tag', () => {
+test('[TAG] Parse a self closing tag', () => {
   const TagParser = new Tag('<img/>')
   TagParser.parse()
 
   expect(TagParser.selfClosing).toBe(true)
 })
 
-test('[SELF-CLOSING-TAG] Detect the tag was closed', () => {
+test('[TAG] Detect the tag was closed', () => {
   const TagParser = new Tag('<img/>')
   TagParser.parse()
 
   expect(TagParser.closed).toBe(true)
 })
 
-test('[SELF-CLOSING-TAG] Detect wrong terminated tag', () => {
+test('[TAG] Detect wrong terminated tag', () => {
   const TagParser = new Tag('<base-component/')
 
   expect(() => TagParser.parse()).toThrow(EOF)
