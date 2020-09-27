@@ -24,7 +24,7 @@ It uses a simple state machine to know where in the code it is parsing and start
 <img :class="dynamicClass" source="logo.png"/>
 ```
 
-[ ] Sanitize attributes/parameters names:
+[x] Sanitize attributes/parameters names:
 ```html
 <img $-=source="logo.png"/> <!-- The parser thinks the attribute is '$-' <h1> -->
 ```
