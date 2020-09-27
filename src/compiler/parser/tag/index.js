@@ -93,12 +93,15 @@ class Tag {
       next = this.next()
 
       if (!this.tagStarted && !this.attributeStarted && next.match(/[\da-zA-Z]/) && !isTagCloser(next)) {
+        assert(isIdentifier(this.data.name), 'INVALID_TAG_NAME')
         this.attributeStarted = this.index - 1
       }
 
       assert(next !== '<', 'TAG_ALREADY_OPEN')
 
       if (next === '/') {
+        assert(isIdentifier(this.data.name), 'INVALID_TAG_NAME')
+
         next = this.next()
         assert(next === '>', 'CLOSE_TAG_EXPECTED')
       }
@@ -107,7 +110,7 @@ class Tag {
         const selfClosing = isSelfClosingTag(this.data.name)
         const closedTag = selfClosing || this.code[this.index-2] == '/'
 
-        this.selfClosing = selfClosing
+        this.selfClosing = selfClosing || closedTag
         this.open = this.code.substring(initial, this.index)
         this.closed = closedTag
         this.end = this.index
@@ -116,7 +119,10 @@ class Tag {
       }
 
       if (this.tagStarted) {
-        if (next.match(/[\da-zA-Z]/)) {
+        const nextMatches = next.match(/[\da-zA-Z]/)
+        const nameIsValid = this.data.name.length >= 1 && next === '-'
+
+        if (nextMatches || nameIsValid) {
           this.data.name += next
           continue
         }
