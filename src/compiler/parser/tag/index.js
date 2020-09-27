@@ -1,9 +1,9 @@
-import { selfClosingTags, isQuote, assert } from '../../utils'
+const { selfClosingTags, isQuote, assert, isTagCloser, isIdentifier } = require('../../utils')
 
 class Tag {
   constructor(code, index = 0) {
     this.code = code
-    this.index = 0
+    this.index = index
 
     this.open = false
     this.closed = false
@@ -64,10 +64,11 @@ class Tag {
         attribute.name += next
         next = this.next()
       } else if (next === '=' && !this.equalStarted) {
+        assert(isIdentifier(attribute.name), 'INVALID_ATTRIBUTE')
         attribute.value = this.parseValue()
         break
       } else {
-        assert(next !== '=', `Wait right there, what you're doing with your attribute?`)
+        assert(next !== '=', 'ATTRIBUTE_VALUE_EXPECTED')
       }
     }
 
@@ -86,23 +87,20 @@ class Tag {
     let initial = this.index
     let next = this.next()
 
-    assert(next === '<', 'Sorry, I exprected a tag to open here...')
+    assert(next === '<', 'OPEN_TAG_EXPECTED')
 
     while(true) {
       next = this.next()
 
-      if (!this.tagStarted && !this.attributeStarted && next.match(/\S/) && next !== '/' && next !== '>') {
+      if (!this.tagStarted && !this.attributeStarted && next.match(/[\da-zA-Z]/) && !isTagCloser(next)) {
         this.attributeStarted = this.index - 1
       }
 
-      if (next === '<') {
-        let error = new Error('Sorry, I was specting a tag opening here...')
-        error.details = this.code.substring(initial, this.end)
-      }
+      assert(next !== '<', 'TAG_ALREADY_OPEN')
 
       if (next === '/') {
         next = this.next()
-        assert(next === '>', 'Your tag may be closing on the wrong side...')
+        assert(next === '>', 'CLOSE_TAG_EXPECTED')
       }
 
       if (next === '>') {
@@ -125,8 +123,12 @@ class Tag {
 
         this.tagStarted = false
       } else if (this.attributeStarted) {
-        assert(next.match(/\S/), 'Sorry, I was expecting your attribute to start here...')
+        assert(isIdentifier(next), 'ATTRIBUTE_EXPECTED')
         this.parseAttribute()
+      } else {
+        // Here it already knows that the attribute is invalid
+        // the assert is just to throw the error nicely
+        assert(isIdentifier(next), 'INVALID_ATTRIBUTE')
       }
     }
   }
