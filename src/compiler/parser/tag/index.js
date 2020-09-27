@@ -1,4 +1,4 @@
-const { selfClosingTags, isQuote, assert, isTagCloser, isIdentifier } = require('../../utils')
+const { isSelfClosingTag, isQuote, assert, isTagCloser, isIdentifier } = require('../../utils')
 
 class Tag {
   constructor(code, index = 0) {
@@ -104,10 +104,10 @@ class Tag {
       }
 
       if (next === '>') {
-        const isSelfClosingTag = selfClosingTags.includes(this.data.name)
-        const closedTag = isSelfClosingTag || this.code[this.index-2] == '/'
+        const selfClosing = isSelfClosingTag(this.data.name)
+        const closedTag = selfClosing || this.code[this.index-2] == '/'
 
-        this.selfClosing = isSelfClosingTag
+        this.selfClosing = selfClosing
         this.open = this.code.substring(initial, this.index)
         this.closed = closedTag
         this.end = this.index
