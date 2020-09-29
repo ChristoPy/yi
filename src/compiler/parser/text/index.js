@@ -72,6 +72,4 @@ class Text {
   }
 }
 
-const myParser = new Text('Hello, {{ name }}!')
-myParser.parse()
-console.log(myParser.data)
+module.exports = Text
