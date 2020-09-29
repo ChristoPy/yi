@@ -4,7 +4,7 @@ A Tag parser is a parser responsible for parsing... yes, tags.
 It uses a simple state machine to know where in the code it is parsing and start parsing another separate thing, like an attribute, and start where it needs, go back, and skip the space occupied by the attribute read previously.
 
 ## To do:
-[ ] Prevent bad unescaped HTML attribute value, like the following:
+[x] Prevent bad unescaped HTML attribute value, like the following:
 ```html
 <img class="'my-awesome class'"/>
 ```
