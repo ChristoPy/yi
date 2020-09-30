@@ -12,7 +12,6 @@ class Text {
   }
 
   next() {
-    // assert(this.index < this.code.length, 'EOF')
     return this.code[this.index++]
   }
 
@@ -29,10 +28,18 @@ class Text {
         break
       }
 
+      // don't know if the best way to know that the text content ended is this
+      if (next === '<') {
+        assert(!this.startedBinding, 'EXPECTED_BINDING_END')
+        break
+      }
+
       if (this.startedBinding && next !== '}') {
         this.data[this.data.length - 1].content += next
         continue
-      } else if (next !== '{' && next !== '}') {
+      }
+
+      if (next !== '{' && next !== '}') {
         if (!this.data.length) {
           this.data.push({ content: next, type: 'text' })
         } else {
@@ -69,6 +76,8 @@ class Text {
         }
       }
     }
+
+    return this.data
   }
 }
 

@@ -10,6 +10,8 @@ const INVALID_ATTRIBUTE = 'Your attribute is not valid, please check it and try 
 
 const ATTRIBUTE_VALUE_EXPECTED = `Wait right there, what you're doing with your attribute? It needs a value`
 
+const EXPECTED_BINDING_END = 'Your binding is not complete, please, ensure your brackets close your binding'
+
 const EOF = 'Okay, your tag seems to end improperly, please check it and try again'
 
 module.exports = {
@@ -20,5 +22,6 @@ module.exports = {
   ATTRIBUTE_EXPECTED,
   INVALID_ATTRIBUTE,
   ATTRIBUTE_VALUE_EXPECTED,
+  EXPECTED_BINDING_END,
   EOF
 }
