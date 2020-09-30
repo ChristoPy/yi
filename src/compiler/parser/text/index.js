@@ -25,6 +25,11 @@ class Text {
 
       // temporary
       if (!next) {
+        const lastText = this.data[this.data.length - 1]
+        if (lastText.type === 'text' && lastText.content.length === 0) {
+          this.data.pop()
+        }
+        assert(!this.startedBinding, 'EXPECTED_BINDING_END')
         break
       }
 
@@ -49,11 +54,11 @@ class Text {
       }
 
       if (next === '{') {
-        if (!this.startedBinding) {
-          this.startedBinding = this.index
-          this.data.push({ content: next, type: 'bind' })
-          continue
-        }
+        assert(!this.startedBinding, 'EXPECTED_BINDING_END')
+
+        this.startedBinding = this.index
+        this.data.push({ content: next, type: 'bind' })
+        continue
       }
 
       if (next === '}') {
@@ -65,7 +70,7 @@ class Text {
           lastText.content += next
           continue
         }
-        if (this.startedBinding === 0) {
+        if (!this.startedBinding) {
           lastText.content += next
           lastText.raw = lastText.content
 
