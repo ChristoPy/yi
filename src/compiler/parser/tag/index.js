@@ -1,4 +1,4 @@
-const { isSelfClosingTag, isQuote, assert, isTagCloser, isIdentifier } = require('../../utils')
+const { isSelfClosingTag, isQuote, assert, isTagCloser, isIdentifier, isAttribute } = require('../../utils')
 
 class Tag {
   constructor(code, index = 0) {
@@ -15,6 +15,7 @@ class Tag {
     this.attributeStarted = 0
     this.equalStarted = 0
     this.valueStarted = 0
+    this.closingStarted = 0
 
     this.data = {
       name: '',
@@ -64,7 +65,7 @@ class Tag {
         attribute.name += next
         next = this.next()
       } else if (next === '=' && !this.equalStarted) {
-        assert(isIdentifier(attribute.name), 'INVALID_ATTRIBUTE')
+        assert(isAttribute(attribute.name), 'INVALID_ATTRIBUTE')
         attribute.value = this.parseValue()
         break
       } else {
@@ -100,6 +101,10 @@ class Tag {
       assert(next !== '<', 'TAG_ALREADY_OPEN')
 
       if (next === '/') {
+        if (!this.data.name.length && !this.closingStarted) {
+          this.closingStarted = true
+          continue
+        }
         assert(isIdentifier(this.data.name), 'INVALID_TAG_NAME')
 
         next = this.next()
@@ -129,12 +134,14 @@ class Tag {
 
         this.tagStarted = false
       } else if (this.attributeStarted) {
-        assert(isIdentifier(next), 'ATTRIBUTE_EXPECTED')
+        assert(!this.closingStarted, 'UNEXPECTED_ATTRIBUTE')
+        assert(isAttribute(next), 'ATTRIBUTE_EXPECTED')
+
         this.parseAttribute()
       } else {
         // Here it already knows that the attribute is invalid
         // the assert is just to throw the error nicely
-        assert(isIdentifier(next), 'INVALID_ATTRIBUTE')
+        assert(isAttribute(next), 'INVALID_ATTRIBUTE')
       }
     }
   }

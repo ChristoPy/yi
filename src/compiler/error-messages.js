@@ -8,6 +8,8 @@ const TAG_ALREADY_OPEN = 'Your tag is already open'
 const ATTRIBUTE_EXPECTED = 'Sorry, I was expecting your attribute to start here...'
 const INVALID_ATTRIBUTE = 'Your attribute is not valid, please check it and try again'
 
+const UNEXPECTED_ATTRIBUTE = 'Closing tags does not allow attributes'
+
 const ATTRIBUTE_VALUE_EXPECTED = `Wait right there, what you're doing with your attribute? It needs a value`
 
 const EXPECTED_BINDING_END = 'Your binding is not complete, please, ensure your brackets close your binding'
@@ -21,6 +23,7 @@ module.exports = {
   TAG_ALREADY_OPEN,
   ATTRIBUTE_EXPECTED,
   INVALID_ATTRIBUTE,
+  UNEXPECTED_ATTRIBUTE,
   ATTRIBUTE_VALUE_EXPECTED,
   EXPECTED_BINDING_END,
   EOF
