@@ -20,7 +20,9 @@ class Tag {
     this.data = {
       name: '',
       type: 'tag',
-      attributes: {}
+      attributes: {},
+      selfClosing: false,
+      tagCloser: false
     }
   }
 
@@ -119,6 +121,9 @@ class Tag {
         this.open = this.code.substring(initial, this.index)
         this.closed = closedTag
         this.end = this.index
+
+        this.data.selfClosing = this.selfClosing
+        this.data.tagCloser = this.closingStarted || false
 
         return this.data
       }
