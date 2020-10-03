@@ -1,6 +1,8 @@
 const OPEN_TAG_EXPECTED = 'Sorry, I expected a tag to open here...'
 const CLOSE_TAG_EXPECTED = 'Your tag is actually not closed properly'
 
+const UNEXPECTED_TAG_OPEN = 'Okay, I was expecting a text here, not a tag'
+
 const INVALID_TAG_NAME = 'The name of your tag contain characters that are not allowed'
 
 const TAG_ALREADY_OPEN = 'Your tag is already open'
@@ -19,6 +21,7 @@ const EOF = 'Okay, your tag seems to end improperly, please check it and try aga
 module.exports = {
   OPEN_TAG_EXPECTED,
   CLOSE_TAG_EXPECTED,
+  UNEXPECTED_TAG_OPEN,
   INVALID_TAG_NAME,
   TAG_ALREADY_OPEN,
   ATTRIBUTE_EXPECTED,

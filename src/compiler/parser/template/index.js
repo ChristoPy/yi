@@ -1,5 +1,5 @@
 const { assert } = require('../../utils')
-const { OPEN_TAG_EXPECTED } = require('../../error-messages')
+const { OPEN_TAG_EXPECTED, UNEXPECTED_TAG_OPEN } = require('../../error-messages')
 const Text = require('../text')
 const Tag = require('../tag')
 
@@ -29,7 +29,8 @@ class Template {
   }
 
   parseTag() {
-    this.current = new Tag(this.code, this.index <= 0 ? this.index  : this.index - 1)
+    const codeToParse = this.code.substring(this.index, this.code.length)
+    this.current = new Tag(codeToParse, 0)
     let result
 
     try {
@@ -41,24 +42,27 @@ class Template {
     }
 
     if (result) {
-      this.index = this.current.index
+      this.index = this.current.index + this.index
       this.end = this.index
       this.data.template.push(result)
     }
   }
 
   parseText() {
-    this.current = new Text(this.code, this.index <= 0 ? this.index  : this.index - 1)
+    const codeToParse = this.code.substring(this.index, this.code.length)
+    this.current = new Text(codeToParse, 0)
     let result
 
     try {
       result = this.current.parse()
     } catch (error) {
-      throw error
+      if (error !== UNEXPECTED_TAG_OPEN) {
+        throw error
+      }
     }
 
     if (result) {
-      this.index = this.current.index
+      this.index = this.current.index + this.index
       this.end = this.index
       this.data.template.push(result)
     }

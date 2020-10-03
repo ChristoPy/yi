@@ -36,7 +36,8 @@ class Text {
       // don't know if the best way to know that the text content ended is this
       if (next === '<') {
         assert(!this.startedBinding, 'EXPECTED_BINDING_END')
-        break
+        // It already knows about the error, just throwing nicely
+        assert(next !== '<', 'UNEXPECTED_TAG_OPEN')
       }
 
       if (this.startedBinding && next !== '}') {
