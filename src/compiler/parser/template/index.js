@@ -1,4 +1,4 @@
-const { assert } = require('../../utils')
+const { assert, pathToTree } = require('../../utils')
 const { OPEN_TAG_EXPECTED, UNEXPECTED_TAG_OPEN } = require('../../error-messages')
 const Text = require('../text')
 const Tag = require('../tag')
@@ -16,11 +16,9 @@ class Template {
     this.scriptStarted = 0
 
     this.current = null
-
-    this.data = {
-      template: [],
-      script: []
-    }
+    this.lastTag = null
+    this.path = ''
+    this.data = {}
   }
 
   next() {
@@ -44,27 +42,42 @@ class Template {
     if (result) {
       this.index = this.current.index + this.index
       this.end = this.index
-      this.data.template.push(result)
+
+      if ((this.lastTag === result.name) || (result.tagCloser)) {
+        this.lastTag = null
+
+        const splittedTree = this.path.split('.')
+        this.path = splittedTree.slice(0, splittedTree.length - 1).join('.')
+        return
+      }
+
+      // add self closing support
+      this.path += (this.path.length ? `.${result.name}` : result.name)
+      this.data = pathToTree(this.path, this.data, result)
+
+      this.lastTag = result.name
     }
   }
 
   parseText() {
     const codeToParse = this.code.substring(this.index, this.code.length)
     this.current = new Text(codeToParse, 0)
-    let result
 
     try {
-      result = this.current.parse()
+      this.current.parse()
     } catch (error) {
       if (error !== UNEXPECTED_TAG_OPEN) {
         throw error
       }
     }
 
-    if (result) {
+    const result = this.current.data
+    if (result.length) {
       this.index = this.current.index + this.index
       this.end = this.index
-      this.data.template.push(result)
+
+      this.path += (this.path.length ? '.$text' : '$text')
+      this.data = pathToTree(this.path, this.data, result)
     }
   }
 
