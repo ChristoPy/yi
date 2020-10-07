@@ -18,12 +18,29 @@ class Template {
     this.current = null
     this.lastTag = null
     this.path = ''
+
+    this.tags = {}
+
     this.data = {}
   }
 
   next() {
     assert(this.index < this.code.length, 'EOF')
     return this.code[this.index++]
+  }
+
+  updateTagCount(tag) {
+    if (!this.tags[tag]) {
+      this.tags[tag] = 0
+    } else {
+      this.tags[tag] += 1
+    }
+  }
+
+  updatePathFromTag(tag) {
+    const quantityOfTexts = this.tags[tag]
+    const tagIdentifier = `${tag}-${quantityOfTexts}`
+    this.path += (this.path.length ? `.${tagIdentifier}` : tagIdentifier)
   }
 
   parseTag() {
@@ -52,9 +69,10 @@ class Template {
       }
 
       // add self closing support
-      this.path += (this.path.length ? `.${result.name}` : result.name)
-      this.data = pathToTree(this.path, this.data, result)
+      this.updateTagCount(result.name)
+      this.updatePathFromTag(result.name)
 
+      this.data = pathToTree(this.path, this.data, result)
       this.lastTag = result.name
     }
   }
@@ -76,7 +94,9 @@ class Template {
       this.index = this.current.index + this.index
       this.end = this.index
 
-      this.path += (this.path.length ? '.$text' : '$text')
+      this.updateTagCount('$text')
+      this.updatePathFromTag('$text')
+
       this.data = pathToTree(this.path, this.data, result)
     }
   }
@@ -85,13 +105,13 @@ class Template {
     const initial = this.index
 
     while(true) {
-      if (this.index === this.code.length) {
+      if (this.index >= this.code.length) {
         break
       }
 
       this.parseTag()
 
-      if (this.index === this.code.length) {
+      if (this.index >= this.code.length) {
         break
       }
 
