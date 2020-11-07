@@ -1,5 +1,6 @@
-const { assert, pathToTree } = require('../../utils')
+const { assert } = require('../../utils')
 const { OPEN_TAG_EXPECTED, UNEXPECTED_TAG_OPEN } = require('../../error-messages')
+const { modifyLast } = require('../utils')
 const Text = require('../text')
 const Tag = require('../tag')
 
@@ -11,15 +12,16 @@ class Template {
     this.start = 0
     this.end = 0
 
-    this.componentStarted = 0
     this.templateStarted = 0
-    this.scriptStarted = 0
 
-    this.current = null
-    this.lastTag = null
+    this.currentParser = null
+    this.lastNode = null
+
+    this.nodes = {}
+    this.nodesCount = {}
+
     this.path = ''
-
-    this.tags = {}
+    this.tree = {}
 
     this.data = {}
   }
@@ -29,82 +31,115 @@ class Template {
     return this.code[this.index++]
   }
 
-  updateTagCount(tag) {
-    if (!this.tags[tag]) {
-      this.tags[tag] = 0
+  updateNodesCount(nodeName) {
+    if (this.nodesCount[nodeName] === undefined) {
+      this.nodesCount[nodeName] = 0
     } else {
-      this.tags[tag] += 1
+      this.nodesCount[nodeName] += 1
     }
   }
 
-  updatePathFromTag(tag) {
-    const quantityOfTexts = this.tags[tag]
-    const tagIdentifier = `${tag}-${quantityOfTexts}`
-    this.path += (this.path.length ? `.${tagIdentifier}` : tagIdentifier)
+  getNodesCount(node) {
+    if (node.tagCloser || node.selfClosing || node.type === 'text') {
+      return this.nodesCount[node.name] || 0
+    }
+    this.updateNodesCount(node.name)
+    return this.nodesCount[node.name]
   }
 
   parseTag() {
     const codeToParse = this.code.substring(this.index, this.code.length)
-    this.current = new Tag(codeToParse, 0)
-    let result
+    this.currentParser = new Tag(codeToParse, 0)
+    let resultingNode
 
     try {
-      result = this.current.parse()
+      resultingNode = this.currentParser.parse()
     } catch (error) {
       if (error !== OPEN_TAG_EXPECTED) {
         throw error
       }
     }
 
-    if (result) {
-      this.index = this.current.index + this.index
+    if (resultingNode) {
+      this.index = this.currentParser.index + this.index
       this.end = this.index
 
-      if ((this.lastTag === result.name) || (result.tagCloser)) {
-        this.lastTag = null
+      const amountOfSameNodes = this.getNodesCount(resultingNode)
+      const nodeName = `${resultingNode.name}-${amountOfSameNodes}`
+      this.nodes[nodeName] = resultingNode
 
-        const splittedTree = this.path.split('.')
-        this.path = splittedTree.slice(0, splittedTree.length - 1).join('.')
-        return
+      if (!resultingNode.tagCloser) {
+        if (!this.path.length) {
+          this.path += nodeName
+        } else {
+          let splittedPath = this.path.split('.')
+          splittedPath = [...splittedPath, nodeName]
+
+          this.path = splittedPath.join('.')
+        }
+
+        if (!this.lastNode) {
+          this.tree = {
+            [nodeName]: {}
+          }
+        } else {
+          this.tree = modifyLast(this.tree, this.path, resultingNode)
+        }
+
+        if (!resultingNode.selfClosing || resultingNode.type !== 'text') {
+          this.lastNode = nodeName
+        }
+      } else {
+        let splittedPath = this.path.split('.')
+
+        this.path = splittedPath.slice(0, splittedPath.length - 1).join('.')
       }
-
-      // add self closing support
-      this.updateTagCount(result.name)
-      this.updatePathFromTag(result.name)
-
-      this.data = pathToTree(this.path, this.data, result)
-      this.lastTag = result.name
     }
   }
 
   parseText() {
     const codeToParse = this.code.substring(this.index, this.code.length)
-    this.current = new Text(codeToParse, 0)
+    this.currentParser = new Text(codeToParse, 0)
 
     try {
-      this.current.parse()
+      this.currentParser.parse()
     } catch (error) {
       if (error !== UNEXPECTED_TAG_OPEN) {
         throw error
       }
     }
 
-    const result = this.current.data
-    if (result.length) {
-      this.index = this.current.index + this.index
+    const resultingData = this.currentParser.data
+
+    if (resultingData.length) {
+      this.index = this.currentParser.index + this.index
       this.end = this.index
 
-      this.updateTagCount('$text')
-      this.updatePathFromTag('$text')
+      let splittedPath = this.path.split('.')
+      const amountOfSameNodes = this.getNodesCount('text')
+      const nodeName = `text-${amountOfSameNodes}`
+      this.nodes[nodeName] = resultingData
 
-      this.data = pathToTree(this.path, this.data, result)
+      if (!this.lastNode || !this.path.length) {
+        this.path += nodeName
+
+        if (!this.path.length) {
+        }
+      } else {
+        splittedPath = [...splittedPath, nodeName]
+
+        this.path = splittedPath.join('.')
+
+        this.tree = modifyLast(this.tree, this.path, nodeName)
+        this.path = splittedPath.slice(0, splittedPath.length - 1).join('.')
+      }
     }
   }
 
   parse() {
     const initial = this.index
 
-    while(true) {
+    while (true) {
       if (this.index >= this.code.length) {
         break
       }

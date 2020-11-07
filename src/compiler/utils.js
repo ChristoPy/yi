@@ -7,6 +7,7 @@ const quotes = ["'", '"']
 const attribute = /(^(([a-z]+)([-][a-z]+)*)$)/
 const identifier = /(^((([a-z])+(\d|)+)([-][a-z]+)*)$)/
 const closesTag = ['/', '>']
+const whiteSpaces = [' ', '\t', '\n']
 
 const pathToTree = (path, target, data) => {
   let splittedPath = path.split('.')
@@ -19,9 +20,11 @@ const pathToTree = (path, target, data) => {
     if (!newPath) {
       target[currentPath] = data
     } else {
+      const items = [pathToTree(newPath, data[currentPath] || {}, data)]
+
       target[currentPath] = {
         ...target[currentPath],
-        ...pathToTree(newPath, target[currentPath] || {}, data),
+        items
       }
     }
     break
@@ -43,7 +46,8 @@ const baseRegexTester = (value, regex) => {
 
 const isQuote =  (value) => quotes.includes(value)
 const isTagCloser = (value) => closesTag.includes(value)
-const isSelfClosingTag = (value) => selfClosingTags.includes(value)
+const isSelfClosingTag = (value) => whiteSpaces.includes(value)
+const isWhiteSpace = (value) => baseRegexTester(value, identifier)
 const isAttribute = (value) => baseRegexTester(value, attribute)
 const isIdentifier = (value) => baseRegexTester(value, identifier)
 
@@ -53,6 +57,7 @@ module.exports = {
   isQuote,
   isTagCloser,
   isSelfClosingTag,
+  isWhiteSpace,
   isAttribute,
   isIdentifier
 }
