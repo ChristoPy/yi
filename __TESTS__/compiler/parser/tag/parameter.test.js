@@ -1,5 +1,5 @@
-const Tag = require('../../../src/compiler/parser/tag')
-const { INVALID_ATTRIBUTE } = require('../../../src/compiler/error-messages')
+const Tag = require('../../../../src/compiler/parser/tag')
+const { INVALID_ATTRIBUTE } = require('../../../../src/compiler/error-messages')
 
 test('[TAG] Parse the tag parameter without dashes', () => {
   const TagParser = new Tag('<img src="logo.png"/>')

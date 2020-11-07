@@ -1,5 +1,5 @@
-const Tag = require('../../../src/compiler/parser/tag')
-const { EOF } = require('../../../src/compiler/error-messages')
+const Tag = require('../../../../src/compiler/parser/tag')
+const { EOF } = require('../../../../src/compiler/error-messages')
 
 test('[TAG] Parse a self closing tag', () => {
   const TagParser = new Tag('<img/>')

@@ -1,5 +1,5 @@
-const Text = require('../../../src/compiler/parser/text')
-const { EXPECTED_BINDING_END } = require('../../../src/compiler/error-messages')
+const Text = require('../../../../src/compiler/parser/text')
+const { EXPECTED_BINDING_END } = require('../../../../src/compiler/error-messages')
 
 test('[BIND] Parse simple binding', () => {
   const text = '{{ name }}'

@@ -46,8 +46,8 @@ const baseRegexTester = (value, regex) => {
 
 const isQuote =  (value) => quotes.includes(value)
 const isTagCloser = (value) => closesTag.includes(value)
-const isSelfClosingTag = (value) => whiteSpaces.includes(value)
-const isWhiteSpace = (value) => baseRegexTester(value, identifier)
+const isSelfClosingTag = (value) => selfClosingTags.includes(value)
+const isWhiteSpace = (value) => whiteSpaces.includes(value)
 const isAttribute = (value) => baseRegexTester(value, attribute)
 const isIdentifier = (value) => baseRegexTester(value, identifier)
 

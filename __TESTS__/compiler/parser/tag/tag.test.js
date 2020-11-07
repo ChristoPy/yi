@@ -1,5 +1,5 @@
-const Tag = require('../../../src/compiler/parser/tag')
-const { INVALID_TAG_NAME } = require('../../../src/compiler/error-messages')
+const Tag = require('../../../../src/compiler/parser/tag')
+const { INVALID_TAG_NAME } = require('../../../../src/compiler/error-messages')
 
 test('[TAG] Parse the tag name without dashes', () => {
   const TagParser = new Tag('<p/>')

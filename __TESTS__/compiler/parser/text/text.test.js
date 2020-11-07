@@ -1,5 +1,5 @@
-const Text = require('../../../src/compiler/parser/text')
-const { UNEXPECTED_TAG_OPEN } = require('../../../src/compiler/error-messages')
+const Text = require('../../../../src/compiler/parser/text')
+const { UNEXPECTED_TAG_OPEN } = require('../../../../src/compiler/error-messages')
 
 test('[TEXT] Parse simple text', () => {
   const text = 'test string'

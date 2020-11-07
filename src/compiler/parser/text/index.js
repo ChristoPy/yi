@@ -37,6 +37,11 @@ class Text {
       if (next === '<') {
         this.index > 0 ? this.index -= 1 : null
 
+        const lastText = this.data[this.data.length - 1]
+        if (lastText && lastText.type === 'text' && lastText.content.length === 0) {
+          this.data.pop()
+        }
+
         assert(!this.startedBinding, 'EXPECTED_BINDING_END')
         // It already knows about the error, just throwing nicely
         assert(next !== '<', 'UNEXPECTED_TAG_OPEN')
