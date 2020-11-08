@@ -79,9 +79,7 @@ class Template {
         }
 
         if (!this.lastNode) {
-          this.tree = {
-            [nodeName]: {}
-          }
+          this.tree[nodeName] = {}
         } else {
           this.tree = modifyLast(this.tree, this.path, resultingNode)
         }
@@ -115,24 +113,23 @@ class Template {
       this.index = this.currentParser.index + this.index
       this.end = this.index
 
-      let splittedPath = this.path.split('.')
-      const amountOfSameNodes = this.getNodesCount('text')
-      const nodeName = `text-${amountOfSameNodes}`
-      this.nodes[nodeName] = resultingData
-
-      if (!this.lastNode || !this.path.length) {
-        this.path += nodeName
-
-        if (!this.path.length) {
+      resultingData.forEach((text) => {
+        const amountOfSameNodes = this.getNodesCount({ name: 'text' })
+        const nodeName = `text-${amountOfSameNodes}`
+        this.nodes[nodeName] = text
+  
+        const lastNode = this.nodes[this.lastNode]
+        if (!this.lastNode || !this.path.length) {
+          this.path += nodeName
+        } else if (!lastNode.tagCloser || !lastNode.selfClosing) {
+          this.path += `.${nodeName}`
         }
-      } else {
-        splittedPath = [...splittedPath, nodeName]
 
-        this.path = splittedPath.join('.')
-
+        const splittedPath = this.path.split('.')
+  
         this.tree = modifyLast(this.tree, this.path, nodeName)
         this.path = splittedPath.slice(0, splittedPath.length - 1).join('.')
-      }
+      })
     }
   }
 
