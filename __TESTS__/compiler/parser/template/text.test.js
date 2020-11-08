@@ -79,3 +79,28 @@ test('[TEMPLATE] Parse template with binding text after all tags', () => {
 
   expect(TemplateParser.tree).toEqual(expected)
 })
+
+test('[TEMPLATE] Parse template with nested tags and texts', () => {
+  const text = '<main><h1>awsome test</h1><div class="card"><h3 class="card title">Card title</h3><p>content</p></div> some text to ensure its working</main>'
+  const expected = {
+    'main-0': {
+      'h1-0': {
+        'text-0': {},
+      },
+      'div-0': {
+        'h3-0': {
+          'text-1': {},
+        },
+        'p-0': {
+          'text-2': {},
+        },
+      },
+      'text-3': {}
+    },
+  }
+
+  const TemplateParser = new Template(text)
+  TemplateParser.parse()
+
+  expect(TemplateParser.tree).toEqual(expected)
+})
