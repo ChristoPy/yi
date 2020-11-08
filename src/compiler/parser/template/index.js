@@ -117,12 +117,15 @@ class Template {
         const amountOfSameNodes = this.getNodesCount({ name: 'text' })
         const nodeName = `text-${amountOfSameNodes}`
         this.nodes[nodeName] = text
-  
+
         const lastNode = this.nodes[this.lastNode]
         if (!this.lastNode || !this.path.length) {
           this.path += nodeName
-        } else if (!lastNode.tagCloser || !lastNode.selfClosing) {
+        } else if (!lastNode.selfClosing) {
           this.path += `.${nodeName}`
+        } else {
+          this.tree[nodeName] = {}
+          return
         }
 
         const splittedPath = this.path.split('.')
