@@ -109,10 +109,12 @@ class Template {
 
     const resultingData = this.currentParser.data
 
-    if (resultingData.length) {
+    if (resultingData.length || !this.currentParser.textStarted) {
       this.index = this.currentParser.index + this.index
       this.end = this.index
+    }
 
+    if (resultingData.length) {
       resultingData.forEach((text) => {
         const amountOfSameNodes = this.getNodesCount({ name: 'text' })
         const nodeName = `text-${amountOfSameNodes}`

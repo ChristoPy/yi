@@ -1,4 +1,4 @@
-const { assert } = require('../../utils')
+const { assert, isWhiteSpace } = require('../../utils')
 
 class Text {
   constructor(code, index = 0) {
@@ -15,16 +15,42 @@ class Text {
     return this.code[this.index++]
   }
 
+  skipWhiteSpaces() {
+    let last = this.code[this.index]
+    let current = isWhiteSpace(this.next())
+    let iterations = 0
+
+    if (isWhiteSpace(last)) {
+      while(current) {
+        last = current
+        current = isWhiteSpace(this.next())
+        iterations += 1
+      }
+
+      if (iterations > 0) {
+        this.index -= 2
+      } else {
+        this.index -= 1
+      }
+    } else {
+      this.index -= 1
+    }
+  }
+
   parse() {
-    this.textStarted = true
     let initial = this.index
     let next
 
     while(true) {
+      if (!this.startedBinding && !this.textStarted) {
+        this.skipWhiteSpaces()
+      }
       next = this.next()
 
       // temporary
       if (!next) {
+        if (!this.textStarted) break
+
         const lastText = this.data[this.data.length - 1]
         if (lastText.type === 'text' && lastText.content.length === 0) {
           this.data.pop()
@@ -32,6 +58,17 @@ class Text {
         assert(!this.startedBinding, 'EXPECTED_BINDING_END')
         break
       }
+
+      if (isWhiteSpace(next)) {
+        this.skipWhiteSpaces()
+
+        if (!this.startedBinding && !this.textStarted) {
+          continue
+        }
+      }
+
+      // Maybe now, semantically, I can know when the text content started
+      this.textStarted = true
 
       // don't know if the best way to know that the text content ended is this
       if (next === '<') {

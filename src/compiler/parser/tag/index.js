@@ -1,4 +1,12 @@
-const { isSelfClosingTag, isQuote, assert, isTagCloser, isIdentifier, isAttribute } = require('../../utils')
+const {
+  isSelfClosingTag,
+  isQuote,
+  assert,
+  isTagCloser,
+  isIdentifier,
+  isAttribute,
+  isWhiteSpace,
+} = require('../../utils')
 
 class Tag {
   constructor(code, index = 0) {
@@ -85,12 +93,19 @@ class Tag {
     return this.code[this.index++]
   }
 
-  parse() {
-    this.tagStarted = true
-    let initial = this.index
-    let next = this.next()
+  skipWhiteSpaces() {
+    while(isWhiteSpace(this.next())) continue
+    this.index -= 1
+  }
 
+  parse() {
+    this.skipWhiteSpaces()
+
+    let next = this.next()
     assert(next === '<', 'OPEN_TAG_EXPECTED')
+
+    let initial = this.index
+    this.tagStarted = true
 
     while(true) {
       next = this.next()
