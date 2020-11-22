@@ -4,6 +4,7 @@
   "description": "Messing with JS while having insomnia.",
   "main": "src/index.js",
   "scripts": {
+    "test": "jest",
     "test-bed": "parcel test-bed/runtime/index.html"
   },
   "repository": {
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/ChristoPy/yi#readme",
   "devDependencies": {
+    "jest": "^26.4.2",
     "parcel-bundler": "^1.12.4"
   }
 }
